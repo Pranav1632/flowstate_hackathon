@@ -42,6 +42,30 @@ export default function IncidentTimeline({ events }: Props) {
     return true;
   });
 
+  const [isExportingDocx, setIsExportingDocx] = useState<boolean>(false);
+
+  const handleDownloadDocx = async () => {
+    setIsExportingDocx(true);
+    try {
+      const res = await fetch("http://localhost:8000/api/incidents/export-docx");
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `RecallGuard_Audit_Dossier_${Date.now()}.docx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    } catch (e) {
+      console.error("Docx export error:", e);
+    } finally {
+      setIsExportingDocx(false);
+    }
+  };
+
   const handleDownloadReport = async () => {
     setIsExporting(true);
     try {
@@ -83,7 +107,7 @@ export default function IncidentTimeline({ events }: Props) {
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-      {/* Top Header & Export Button */}
+      {/* Top Header & Export Buttons */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3 mb-4">
         <div>
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
@@ -94,15 +118,31 @@ export default function IncidentTimeline({ events }: Props) {
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={handleDownloadReport}
-          disabled={isExporting}
-          className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs transition-colors"
-        >
-          <Download className="w-3.5 h-3.5 text-indigo-600" />
-          <span>{isExporting ? "Exporting..." : "Export Signed Audit"}</span>
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Word Document (.docx) Export */}
+          <button
+            type="button"
+            onClick={handleDownloadDocx}
+            disabled={isExportingDocx}
+            className="flex items-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 text-xs font-semibold text-indigo-700 shadow-2xs transition-colors disabled:opacity-50"
+            title="Download certified executive report as Microsoft Word (.docx)"
+          >
+            <FileText className="w-3.5 h-3.5 text-indigo-600" />
+            <span>{isExportingDocx ? "Generating Word..." : "Word Doc (.docx)"}</span>
+          </button>
+
+          {/* JSON Export */}
+          <button
+            type="button"
+            onClick={handleDownloadReport}
+            disabled={isExporting}
+            className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs transition-colors disabled:opacity-50"
+            title="Download signed JSON audit trail"
+          >
+            <Download className="w-3.5 h-3.5 text-slate-500" />
+            <span>{isExporting ? "Exporting..." : "JSON Audit"}</span>
+          </button>
+        </div>
       </div>
 
       {/* Filter Pills */}
