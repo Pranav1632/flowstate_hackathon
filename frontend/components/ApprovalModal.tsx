@@ -17,14 +17,31 @@ interface Props {
   approvals: ApprovalItem[];
   onDecide: (approvalId: string, decision: "APPROVED" | "REJECTED") => void;
   isDeciding?: boolean;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
-export default function ApprovalModal({ approvals, onDecide, isDeciding }: Props) {
+const SAMPLE_APPROVAL: ApprovalItem = {
+  id: "app-sample-01",
+  incident_id: "INC-RECALL-982",
+  action_type: "send_recall_notice",
+  target_id: "LOT-24-A",
+  payload: JSON.stringify({
+    lot_id: "LOT-24-A",
+    affected_count: 4,
+    reason: "External recall broadcast carries legal & clinical impact; requires compliance officer authorization."
+  }),
+  status: "PENDING_REVIEW",
+  created_at: new Date().toISOString()
+};
+
+export default function ApprovalModal({ approvals, onDecide, isDeciding, isOpen, onClose }: Props) {
   const [showPreview, setShowPreview] = useState<boolean>(true);
 
-  if (approvals.length === 0) return null;
+  const shouldShow = isOpen !== undefined ? isOpen : approvals.length > 0;
+  if (!shouldShow) return null;
 
-  const current = approvals[0];
+  const current = approvals.length > 0 ? approvals[0] : SAMPLE_APPROVAL;
   let payloadParsed: any = {};
   try {
     payloadParsed = JSON.parse(current.payload);
@@ -33,11 +50,11 @@ export default function ApprovalModal({ approvals, onDecide, isDeciding }: Props
   }
 
   const lotId = payloadParsed.lot_id || current.target_id || "LOT-24-A";
-  const affectedCount = payloadParsed.affected_count || 3;
+  const affectedCount = payloadParsed.affected_count || 4;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 overflow-y-auto">
-      <div className="w-full max-w-xl rounded-xl border border-slate-200 bg-white p-6 shadow-2xl my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 overflow-y-auto">
+      <div className="w-full max-w-xl rounded-xl border border-slate-200 bg-white p-6 shadow-2xl my-8 relative">
         {/* Header */}
         <div className="flex items-start justify-between border-b border-slate-100 pb-4 mb-4">
           <div className="flex items-center gap-3">
@@ -58,6 +75,17 @@ export default function ApprovalModal({ approvals, onDecide, isDeciding }: Props
               </p>
             </div>
           </div>
+
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              title="Close modal"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
 
         {/* Metadata info */}

@@ -20,7 +20,8 @@ import {
   ExternalLink,
   ChevronRight,
   Eye,
-  FileText
+  FileText,
+  UserCheck
 } from "lucide-react";
 import BlastRadiusGraph from "@/components/BlastRadiusGraph";
 import ArmorIQPolicyHUD from "@/components/ArmorIQPolicyHUD";
@@ -57,6 +58,7 @@ export default function Home() {
   const [inventory, setInventory] = useState<{ lots: any[]; shipments: any[] }>({ lots: [], shipments: [] });
   const [approvals, setApprovals] = useState<any[]>([]);
   const [isDeciding, setIsDeciding] = useState<boolean>(false);
+  const [isHITLModalOpen, setIsHITLModalOpen] = useState<boolean>(false);
   const [redisStatus, setRedisStatus] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -214,6 +216,16 @@ export default function Home() {
 
   const handleDecideApproval = async (approvalId: string, decision: "APPROVED" | "REJECTED") => {
     setIsDeciding(true);
+    if (approvalId === "app-sample-01") {
+      setTimeout(() => {
+        setIsDeciding(false);
+        setIsHITLModalOpen(false);
+        setHeldCount((c) => Math.max(0, c - 1));
+        if (decision === "APPROVED") setAllowedCount((c) => c + 1);
+        else setBlockedCount((c) => c + 1);
+      }, 400);
+      return;
+    }
     try {
       const res = await fetch(`${API_BASE}/api/approvals/${approvalId}/decide`, {
         method: "POST",
@@ -224,6 +236,7 @@ export default function Home() {
       if (res.ok) {
         setApprovals((prev) => prev.filter((a) => a.id !== approvalId));
         await fetchInventory();
+        setIsHITLModalOpen(false);
       }
     } catch (e) {
       console.error("Decision failed:", e);
@@ -287,6 +300,28 @@ export default function Home() {
               />
             </div>
 
+            {/* Human-in-the-Loop Review Gate Button */}
+            <button
+              type="button"
+              onClick={() => setIsHITLModalOpen(true)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all shadow-2xs ${
+                approvals.length > 0 || heldCount > 0
+                  ? "bg-amber-500 hover:bg-amber-600 text-white border-amber-600 animate-pulse shadow-md shadow-amber-500/20"
+                  : "border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900"
+              }`}
+              title="Open Human-in-the-Loop Policy Review Gate"
+            >
+              <UserCheck className="w-3.5 h-3.5" />
+              <span>Human Review</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${
+                approvals.length > 0 || heldCount > 0
+                  ? "bg-white text-amber-900"
+                  : "bg-amber-200 text-amber-900"
+              }`}>
+                {approvals.length > 0 ? `${approvals.length} HELD` : heldCount > 0 ? `${heldCount} HELD` : "HITL"}
+              </span>
+            </button>
+
             {/* Toggle Landing Page Button */}
             <button
               type="button"
@@ -349,6 +384,7 @@ export default function Home() {
                     heldCount={heldCount}
                     blockedCount={blockedCount}
                     phase={phase}
+                    onOpenHITL={() => setIsHITLModalOpen(true)}
                   />
                 </div>
               </div>
@@ -566,6 +602,8 @@ export default function Home() {
         approvals={approvals}
         onDecide={handleDecideApproval}
         isDeciding={isDeciding}
+        isOpen={isHITLModalOpen}
+        onClose={() => setIsHITLModalOpen(false)}
       />
     </div>
   );

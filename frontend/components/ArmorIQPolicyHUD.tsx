@@ -10,6 +10,7 @@ interface Props {
   heldCount: number;
   blockedCount: number;
   phase: "IDLE" | "DECLARE" | "CHECK" | "EXECUTE" | "COMPLETE";
+  onOpenHITL?: () => void;
 }
 
 export default function ArmorIQPolicyHUD({
@@ -17,7 +18,8 @@ export default function ArmorIQPolicyHUD({
   allowedCount,
   heldCount,
   blockedCount,
-  phase
+  phase,
+  onOpenHITL
 }: Props) {
   const [copied, setCopied] = useState(false);
 
@@ -71,13 +73,22 @@ export default function ArmorIQPolicyHUD({
           <span className="text-[11px] text-emerald-700">Permitted actions</span>
         </div>
 
-        <div className="flex flex-col rounded-lg border border-amber-100 bg-amber-50/60 p-3">
+        <div
+          onClick={onOpenHITL}
+          className="flex flex-col rounded-lg border border-amber-200 bg-amber-50/70 p-3 cursor-pointer hover:border-amber-400 hover:shadow-xs transition-all group"
+          title="Click to open Human-in-the-Loop Review Gate"
+        >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-amber-800">HELD (HITL)</span>
-            <Clock className="w-3.5 h-3.5 text-amber-600" />
+            <Clock className="w-3.5 h-3.5 text-amber-600 group-hover:scale-110 transition-transform" />
           </div>
-          <span className="text-2xl font-bold font-mono text-amber-900 mt-1">{heldCount}</span>
-          <span className="text-[11px] text-amber-700">Human review</span>
+          <div className="flex items-baseline justify-between mt-1">
+            <span className="text-2xl font-bold font-mono text-amber-900">{heldCount}</span>
+            <span className="text-[10px] font-bold text-amber-700 bg-amber-100/90 px-1.5 py-0.5 rounded border border-amber-200 group-hover:bg-amber-200 transition-colors">
+              Review Gate ↗
+            </span>
+          </div>
+          <span className="text-[11px] text-amber-700">Click to approve</span>
         </div>
 
         <div className="flex flex-col rounded-lg border border-rose-100 bg-rose-50/60 p-3">
