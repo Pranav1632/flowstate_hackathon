@@ -1,7 +1,9 @@
 # RecallGuard — Governed AI Supply Chain Recall & Safety Agent
 
 > **Track**: Governed Workflows, Auditable Actions & Physical-World AI Safety  
-> **Core Innovation**: Governs autonomous AI agent execution with **ArmorIQ** cryptographic intent enforcement (Declare-Check-Execute) and **Gemini 3.8 Flash** clinical reasoning to prevent unauthorized inventory releases and data exfiltration during physical-world pharmaceutical and pediatric recalls.
+> **Core Innovation**: Governs autonomous AI agent execution with **ArmorIQ** cryptographic intent enforcement (Declare-Check-Execute) and **Google Gemini 3.8 Flash** clinical reasoning to prevent unauthorized inventory releases and data exfiltration during physical-world pharmaceutical and pediatric recalls.  
+> **Presenter & Author**: Pranav Gaikwad  
+> **ArmorTools Pro Workspace**: `Pranav Gaikwad's Workspace (Pro)` | Policy Profile: `v1 Published`  
 
 ---
 
@@ -26,7 +28,7 @@ RecallGuard establishes an unbreakable **Tool-Execution Boundary enforced by Arm
 +-----------------------------------------------------------------------------------+
 |                            RECALLGUARD AGENT LIFECYCLE                            |
 +-----------------------------------------------------------------------------------+
-|  1. INGESTION & COGNITION (Gemini 3.8 Flash)                                      |
+|  1. INGESTION & COGNITION (Google Gemini 3.8 Flash)                               |
 |     - Clinical Reasoning: Evaluates demographic vulnerability & Class I risk      |
 |     - Threat Analysis: Detects adversarial override tokens & jailbreak payloads   |
 +-----------------------------------------------------------------------------------+
@@ -95,34 +97,88 @@ flowchart TD
 
 ## 4. Key Platform Features
 
-### A. Dedicated AI Clinical Reasoning & Threat Analysis Section
-* **Clinical Justification**: Autonomous reasoning explaining demographic vulnerability (e.g., infant mortality, cardiac surgery risk) and statutory FDA Class I recall criteria.
+### A. Dedicated AI Clinical Reasoning & Threat Analysis
+* **Clinical Justification**: Autonomous reasoning evaluating demographic vulnerability (e.g., infant mortality, cardiac surgery risks) and statutory FDA Class I recall criteria.
 * **Adversarial Security Analysis**: Deep chain-of-thought analysis highlighting flagged jailbreak tokens (`=== SYSTEM MAINTENANCE & PRIORITY OVERRIDE ===`) and unauthorized exfiltration sinks.
 
-### B. Multi-Vertical Product Batches
-* **Infant Nutrition**: BioPure Pediatric Infant Formula 400g (`LOT-24-A`, 200 units across 2 warehouses, 4 downstream clinics).
-* **Pharmaceutical Cardiovascular Rx**: CardioShield Injectable Heparin 5000 IU/mL (`LOT-CAR-01`, 350 units across 2 warehouses, 4 cardiac ICUs and surgical depots).
+### B. ArmorTools Policy Studio Integration
+* **Workspace**: `Pranav Gaikwad's Workspace` (**PRO Plan** activated via `FLOWSTATEPRO`).
+* **Published Profile (`v1 Published`)**:
+  1. `forbid-destructive-bash` → **BLOCK** (`rm`, `sudo`, `chmod`)
+  2. `forbid-force-push` → **BLOCK** (`git push.*--force`)
+  3. `hold-all-bash` → **HOLD** (Human approval required for shell execution)
+  4. `hold-all-writes` → **HOLD** (Human approval required for `Write`, `Edit`, `MultiEdit`)
+  5. `allow-read-tools` → **ALLOW** (`Read`, `Grep`, `Glob`, `WebSearch`)
+  6. `forbid-read-env` → **BLOCK** (Denies reading `.env` secret files)
 
-### C. Enterprise Compliance Export
+### C. Human-in-the-Loop (HITL) Policy Gate
+* **Dedicated Top-Bar Button**: Always accessible from the header and the HUD metrics card.
+* **Clinical Email Preview**: Full modal accordion previewing drafted hospital advisories (recipients, EDI 856 / HL7 gateways, emergency directives) with **Approve & Dispatch** and **Reject** controls.
+
+### D. Multi-Vertical Product Batches
+* **Infant Nutrition**: BioPure Pediatric Infant Formula 400g (`LOT-24-A`, 200 units across 2 warehouses, 4 downstream clinics).
+* **Cardiovascular Rx**: CardioShield Injectable Heparin 5000 IU/mL (`LOT-CAR-01`, 350 units across 2 warehouses, 4 cardiac ICUs and surgical depots).
+
+### E. Enterprise Compliance Export
 * **Word Document Dossier (`.docx`)**: One-click download of an official executive regulatory report compiled with `python-docx` containing incident summaries, quarantined warehouse lots, and audit trails.
 * **Cryptographic JSON Audit**: Raw, tamper-evident action logs for automated regulatory ingest.
 
-### D. Human-in-the-Loop Hospital Advisory Gate
-* External broadcast notices are held by ArmorIQ. Compliance officers can expand a live **Clinical & Hospital Advisory Email Preview** detailing recipient ICUs, transmission protocols (HL7 / EDI 856 / TLS SMTP), and emergency directives before clicking **Approve & Dispatch**.
+---
 
-### E. Redis High-Speed Caching & Event Bus
-* Real-time blast-radius graph caching and distributed pub/sub event streaming with graceful in-memory fallback.
+## 5. Official Demo Video Script (3–5 Minutes)
+
+### [0:00 – 0:45] The Problem & Who It’s For
+* **Screen**: RecallGuard Landing Page (`http://localhost:3001`).
+* **Script**:  
+  *"Hi everyone, I’m Pranav Gaikwad, and this is RecallGuard—an autonomous supply chain recall intelligence agent governed by ArmorIQ.*  
+  *In regulated healthcare and pharmaceutical supply chains, when an urgent FDA Class I recall notice arrives, compliance officers face a dangerous speed bottleneck: tracing lots and issuing holds manually takes hours while contaminated goods reach hospital ICUs.*  
+  *While AI agents solve this speed problem, giving an LLM write access to ERPs introduces catastrophic prompt injection risk: an attacker can fake a safety clearance, force a quarantine release, or exfiltrate hospital records.*  
+  *RecallGuard solves this with Google Gemini 3.8 Flash clinical reasoning governed by ArmorIQ's Declare-Check-Execute intent framework."*
+
+### [0:45 – 1:30] ArmorTools Console & Policy Studio
+* **Screen**: `tools.armoriq.ai/policy-studio` tab.
+* **Script**:  
+  *"Here in our ArmorTools Pro Console under Pranav Gaikwad's Workspace, we use Policy Studio to author and publish our v1 policy profile.*  
+  *We set explicit rules: read tools are ALLOWED autonomously; high-impact tools like Bash and file writes require human approval (HOLD); and destructive commands, force-pushes, and attempts to read `.env` secrets are strictly BLOCKED.*  
+  *We activated this for the workspace, establishing server-side policy enforcement."*
+
+### [1:30 – 3:15] End-to-End Live Product Demo
+* **Screen**: RecallGuard Mission Control (`localhost:3001`).
+* **Script**:  
+  *(Click Scenario 1: 'Standard FDA Infant Formula Notice' → Run Investigation)*  
+  *"When a recall notice arrives, RecallGuard processes it live:*  
+  *1. Gemini 3.8 Flash extracts the target lot and generates clinical reasoning.*  
+  *2. MCP tools traverse the blast radius across warehouses and hospitals.*  
+  *3. Before executing, the agent declares its plan to ArmorIQ, receiving a cryptographic Intent Token.*  
+  *4. Shipping transit holds are autonomously ALLOWED.*  
+  *5. External hospital broadcast advisories trigger an ArmorIQ HOLD.*  
+  *(Click 'Human Review' modal in the header)*  
+  *As compliance officer, I inspect the clinical alert email preview and approve it to dispatch."*
+
+### [3:15 – 4:00] Adversarial Prompt Injection Defense
+* **Screen**: Select scenario `Adversarial Injection (Prompt Override)` → Run.
+* **Script**:  
+  *"Now we test an adversarial attack where a malicious notice embeds a SYSTEM MAINTENANCE OVERRIDE attempting to release the quarantine and steal hospital records.*  
+  *Even if the LLM is tricked into proposing `release_quarantine`, ArmorIQ’s policy engine intercepts the call at runtime and issues a cryptographic BLOCK.*  
+  *The inventory remains locked in physical quarantine."*
+
+### [4:00 – 4:45] Takeaways & What We’d Build Next
+* **Screen**: Mission Control Overview.
+* **Script**:  
+  *"Key takeaways: Intent governance is non-negotiable for enterprise agents. Combining LLM clinical reasoning with runtime policy enforcement completely closes the prompt injection vulnerability.*  
+  *Next, we plan to integrate automated voice dispatch via ElevenLabs, native Epic/Cerner EHR connectors via HL7 FHIR, and industrial RFID edge lockouts.*  
+  *Thank you!"*
 
 ---
 
-## 5. Quick Start & Setup
+## 6. Quick Start & Setup
 
 ### Prerequisites
 * **Python 3.10+** (Python 3.13 tested)
 * **Node.js 18+** (Node v22 tested)
-* (Optional) **Redis Server** on `localhost:6379` (In-memory fallback operates automatically if Redis is offline)
+* (Optional) **Redis Server** on `localhost:6379` (In-memory fallback operates automatically)
 
-### Installation
+### Setup Instructions
 
 1. **Clone the Repository**:
    ```bash
@@ -158,7 +214,7 @@ Open **[http://localhost:3001](http://localhost:3001)** in your browser.
 
 ---
 
-## 6. Automated Test Suite
+## 7. Automated Test Suite
 
 Run the full automated test suite verifying MCP tool domain invariants, ArmorIQ Declare-Check-Execute policies, and adversarial prompt injection containment:
 ```powershell
@@ -171,32 +227,8 @@ All **13 tests pass (100% green)**:
 
 ---
 
-## 7. Future Integrations & Roadmap
-
-RecallGuard is built to scale into enterprise hospital networks and national pharmaceutical supply chains. Planned future integrations include:
-
-### 1. HL7 / FHIR E-Prescribing & Hospital EHR Interconnect
-* Connect directly with Epic and Cerner EHR systems via **HL7 FHIR MedicationAdministration** APIs to immediately freeze clinical dispensing carts and alert attending physicians if a recalled batch was administered in the last 72 hours.
-
-### 2. FDA MedWatch & National Drug Code (NDC) Automated Ingest
-* Direct bidirectional webhooks to the **FDA electronic Recall Enterprise System (RES)** and MedWatch safety portal to auto-ingest published recalls and file certified post-containment dossiers.
-
-### 3. Physical Warehouse Edge Lockouts (GS1-128 & RFID)
-* Direct industrial IoT integrations with warehouse management systems (Manhattan Associates, Blue Yonder) to trigger automated physical RFID scanner lockouts, preventing forklift operators from picking or staging quarantined pallet tags.
-
-### 4. Zero-Knowledge Cryptographic Compliance Attestation (zk-SNARKs)
-* Leverage zero-knowledge proofs to allow pharmaceutical manufacturers to mathematically prove 100% quarantine compliance to federal regulators without exposing proprietary shipment volumes, client hospital names, or commercial pricing.
-
-### 5. Multi-Region Kafka & Redis Sentinel Mesh
-* Scale from single-node Redis to distributed Apache Kafka and Redis Sentinel clusters capable of evaluating millions of SKU movements and GPS telematics events per second.
-
-### 6. ArmorIQ Developer & Terminal Agent Governance
-* Native hooks into ArmorIQ's CLI and IDE extensions (such as **ArmorAntigravity** and **ArmorClaude**) to enforce enterprise safety policies across developer terminals and automated CI/CD deployment agents.
-
----
-
 ## 8. License & Acknowledgments
 
 * Governed by **ArmorIQ Intent Enforcement Architecture**.
 * Powered by **Google Gemini 3.8 Flash**.
-* Built for the **FlowState Hackathon 2026**.
+* Built by **Pranav Gaikwad** for the **FlowState Hackathon 2026**.
