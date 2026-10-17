@@ -4,7 +4,8 @@
 > **Core Innovation**: Governs autonomous AI agent execution with **ArmorIQ** cryptographic intent enforcement (Declare-Check-Execute) and **Google Gemini 3.8 Flash** clinical reasoning to prevent unauthorized inventory releases and data exfiltration during physical-world pharmaceutical and pediatric recalls.  
 > **Presenter & Author**: Pranav Gaikwad  
 > **ArmorTools Pro Workspace**: `Pranav Gaikwad's Workspace (Pro)` | Published Profile: `v1 Published`  
-> **GitHub Repository**: [https://github.com/Pranav1632/flowstate_hackathon](https://github.com/Pranav1632/flowstate_hackathon)
+> **Demo Video**: [Watch on YouTube (https://youtu.be/yYDrOYuOIlY)](https://youtu.be/yYDrOYuOIlY)  
+> **GitHub**: [github.com/Pranav1632/flowstate_hackathon](https://github.com/Pranav1632/flowstate_hackathon)  
 
 ---
 
@@ -220,7 +221,9 @@ sequenceDiagram
 
 ---
 
-## 5. Official Demo Video Script (3–5 Minutes)
+## 5. Official Demo Video & Script
+
+> **Live Video Walkthrough**: [https://youtu.be/yYDrOYuOIlY](https://youtu.be/yYDrOYuOIlY)
 
 ### [0:00 – 0:45] The Problem & Who It’s For
 * **Screen**: RecallGuard Landing Page (`http://localhost:3001`).
