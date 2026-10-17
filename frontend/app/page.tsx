@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Shield, CheckCircle, AlertCircle } from "lucide-react";
+import { Shield, CheckCircle, AlertCircle, Network, Clock, Database, LayoutGrid } from "lucide-react";
 import BlastRadiusGraph from "@/components/BlastRadiusGraph";
 import ArmorIQPolicyHUD from "@/components/ArmorIQPolicyHUD";
 import ScenarioSelector from "@/components/ScenarioSelector";
@@ -23,6 +23,7 @@ export default function Home() {
   const [blockedCount, setBlockedCount] = useState<number>(0);
   const [phase, setPhase] = useState<"IDLE" | "DECLARE" | "CHECK" | "EXECUTE" | "COMPLETE">("IDLE");
   const [adversarialBlocked, setAdversarialBlocked] = useState<boolean>(false);
+  const [activeSection, setActiveSection] = useState<"topology" | "audit" | "records" | "all">("topology");
 
   // Database state
   const [inventory, setInventory] = useState<{ lots: any[]; shipments: any[] }>({ lots: [], shipments: [] });
@@ -237,6 +238,13 @@ export default function Home() {
           <ScenarioSelector
             scenarios={scenarios}
             onRunScenario={handleRunScenario}
+            onSelectScenario={(id) => {
+              if (id === "unknown_lot") {
+                fetchBlastRadius("UNKNOWN-LOT");
+              } else {
+                fetchBlastRadius("LOT-24-A");
+              }
+            }}
             isRunning={isRunning}
             onReset={handleReset}
           />
@@ -254,18 +262,130 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Centerpiece: Supply Chain Blast Radius Graph */}
-      <BlastRadiusGraph data={blastData} adversarialBlocked={adversarialBlocked} />
+      {/* Investigation Operations & Intelligence Tabs */}
+      <div className="space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
+          <div className="flex flex-wrap items-center gap-1.5 rounded-xl bg-slate-200/70 p-1 text-xs">
+            <button
+              type="button"
+              onClick={() => setActiveSection("topology")}
+              className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 font-medium transition-all ${
+                activeSection === "topology"
+                  ? "bg-white text-indigo-700 shadow-xs font-semibold ring-1 ring-slate-200/60"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
+              }`}
+            >
+              <Network className="w-3.5 h-3.5" />
+              <span>Blast-Radius Topology</span>
+              {blastData?.nodes?.length ? (
+                <span className="rounded bg-indigo-50 px-1.5 py-0.5 text-[10px] font-bold text-indigo-700 border border-indigo-100">
+                  {blastData.nodes.length} nodes
+                </span>
+              ) : null}
+            </button>
 
-      {/* Bottom Grid: Live Timeline & Inventory Explorer */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-6">
-          <IncidentTimeline events={events} />
+            <button
+              type="button"
+              onClick={() => setActiveSection("audit")}
+              className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 font-medium transition-all ${
+                activeSection === "audit"
+                  ? "bg-white text-indigo-700 shadow-xs font-semibold ring-1 ring-slate-200/60"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
+              }`}
+            >
+              <Clock className="w-3.5 h-3.5" />
+              <span>Action Audit & Decisions</span>
+              {events.length > 0 && (
+                <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-700 border border-slate-200">
+                  {events.length} records
+                </span>
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveSection("records")}
+              className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 font-medium transition-all ${
+                activeSection === "records"
+                  ? "bg-white text-indigo-700 shadow-xs font-semibold ring-1 ring-slate-200/60"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
+              }`}
+            >
+              <Database className="w-3.5 h-3.5" />
+              <span>Supply Chain Records</span>
+              {inventory?.shipments?.length ? (
+                <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-700 border border-slate-200">
+                  {inventory.shipments.length} shipments
+                </span>
+              ) : null}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveSection("all")}
+              className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 font-medium transition-all ${
+                activeSection === "all"
+                  ? "bg-white text-indigo-700 shadow-xs font-semibold ring-1 ring-slate-200/60"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
+              }`}
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+              <span>Overview (All-in-One)</span>
+            </button>
+          </div>
+
+          {/* Quick status indicator */}
+          <div className="flex items-center gap-2.5 text-xs text-slate-500">
+            <span className="font-mono text-[11px] bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200 text-slate-700">
+              Active Batch: <span className="font-bold text-slate-900">{blastData?.lot_id || "LOT-24-A"}</span>
+            </span>
+            {isRunning && (
+              <span className="flex items-center gap-1.5 font-semibold text-indigo-600 animate-pulse">
+                <span className="h-2 w-2 rounded-full bg-indigo-600"></span>
+                Investigation in Progress...
+              </span>
+            )}
+          </div>
         </div>
 
-        <div className="lg:col-span-6">
-          <InventoryTable lots={inventory.lots} shipments={inventory.shipments} />
-        </div>
+        {/* Dynamic Section Rendering */}
+        {activeSection === "topology" && (
+          <BlastRadiusGraph
+            data={blastData}
+            adversarialBlocked={adversarialBlocked}
+            onSelectSample={(lotId) => fetchBlastRadius(lotId)}
+          />
+        )}
+
+        {activeSection === "audit" && (
+          <div className="w-full">
+            <IncidentTimeline events={events} />
+          </div>
+        )}
+
+        {activeSection === "records" && (
+          <div className="w-full">
+            <InventoryTable lots={inventory.lots} shipments={inventory.shipments} />
+          </div>
+        )}
+
+        {activeSection === "all" && (
+          <div className="space-y-6">
+            <BlastRadiusGraph
+              data={blastData}
+              adversarialBlocked={adversarialBlocked}
+              onSelectSample={(lotId) => fetchBlastRadius(lotId)}
+            />
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div className="lg:col-span-6">
+                <IncidentTimeline events={events} />
+              </div>
+              <div className="lg:col-span-6">
+                <InventoryTable lots={inventory.lots} shipments={inventory.shipments} />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Human-in-the-Loop Review Modal */}

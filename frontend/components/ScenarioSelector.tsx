@@ -6,6 +6,7 @@ import { Play, RotateCcw, ShieldAlert, AlertTriangle, FileText } from "lucide-re
 interface Props {
   scenarios: Record<string, any>;
   onRunScenario: (scenarioId: string, customText?: string) => void;
+  onSelectScenario?: (scenarioId: string) => void;
   isRunning: boolean;
   onReset: () => void;
 }
@@ -13,6 +14,7 @@ interface Props {
 export default function ScenarioSelector({
   scenarios,
   onRunScenario,
+  onSelectScenario,
   isRunning,
   onReset
 }: Props) {
@@ -50,7 +52,11 @@ export default function ScenarioSelector({
         {/* Scenario 2 (Adversarial) */}
         <button
           type="button"
-          onClick={() => { setSelectedScenario("adversarial"); setCustomMode(false); }}
+          onClick={() => {
+            setSelectedScenario("adversarial");
+            setCustomMode(false);
+            onSelectScenario?.("adversarial");
+          }}
           className={`flex flex-col text-left rounded-lg p-3.5 border transition-all ${
             !customMode && selectedScenario === "adversarial"
               ? "border-rose-400 bg-rose-50/50 ring-2 ring-rose-200"
@@ -71,7 +77,11 @@ export default function ScenarioSelector({
         {/* Scenario 1 (Standard) */}
         <button
           type="button"
-          onClick={() => { setSelectedScenario("standard"); setCustomMode(false); }}
+          onClick={() => {
+            setSelectedScenario("standard");
+            setCustomMode(false);
+            onSelectScenario?.("standard");
+          }}
           className={`flex flex-col text-left rounded-lg p-3.5 border transition-all ${
             !customMode && selectedScenario === "standard"
               ? "border-indigo-400 bg-indigo-50/50 ring-2 ring-indigo-200"
@@ -92,7 +102,11 @@ export default function ScenarioSelector({
         {/* Scenario 3 (Unknown Lot) */}
         <button
           type="button"
-          onClick={() => { setSelectedScenario("unknown_lot"); setCustomMode(false); }}
+          onClick={() => {
+            setSelectedScenario("unknown_lot");
+            setCustomMode(false);
+            onSelectScenario?.("unknown_lot");
+          }}
           className={`flex flex-col text-left rounded-lg p-3.5 border transition-all ${
             !customMode && selectedScenario === "unknown_lot"
               ? "border-amber-400 bg-amber-50/50 ring-2 ring-amber-200"

@@ -28,17 +28,29 @@ interface GraphData {
 interface Props {
   data: GraphData | null;
   adversarialBlocked?: boolean;
+  onSelectSample?: (lotId: string) => void;
 }
 
-export default function BlastRadiusGraph({ data, adversarialBlocked }: Props) {
+export default function BlastRadiusGraph({ data, adversarialBlocked, onSelectSample }: Props) {
   if (!data || !data.nodes || data.nodes.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-64 rounded-xl border border-slate-200 bg-white p-6 text-center text-slate-500 shadow-sm">
-        <ShieldAlert className="w-10 h-10 text-slate-300 mb-2" />
-        <p className="font-semibold text-slate-700">No Active Recall Selected</p>
-        <p className="text-xs text-slate-400 max-w-sm mt-1">
-          Select a scenario above to trace the physical blast radius across warehouses and shipments.
+      <div className="flex flex-col items-center justify-center h-72 rounded-xl border border-slate-200 bg-white p-6 text-center text-slate-500 shadow-sm">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400 mb-3">
+          <ShieldAlert className="w-6 h-6" />
+        </div>
+        <p className="font-bold text-slate-800 text-sm">No Active Recall Selected</p>
+        <p className="text-xs text-slate-500 max-w-md mt-1 mb-4 leading-relaxed">
+          Select or run a scenario above to trace the physical blast radius across warehouses and shipments, or click below to inspect the default supply chain topology.
         </p>
+        {onSelectSample && (
+          <button
+            type="button"
+            onClick={() => onSelectSample("LOT-24-A")}
+            className="flex items-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-1.5 text-xs font-semibold shadow-xs transition-colors"
+          >
+            <span>Inspect Lot LOT-24-A Topology</span>
+          </button>
+        )}
       </div>
     );
   }

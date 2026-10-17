@@ -8,24 +8,43 @@ interface Props {
   shipments: any[];
 }
 
-export default function InventoryTable({ lots, shipments }: Props) {
+export default function InventoryTable({ lots = [], shipments = [] }: Props) {
   const [tab, setTab] = useState<"shipments" | "lots">("shipments");
   const [filter, setFilter] = useState("");
 
-  const filteredLots = lots.filter(
-    (l) =>
-      l.lot_id.toLowerCase().includes(filter.toLowerCase()) ||
-      l.warehouse_id.toLowerCase().includes(filter.toLowerCase()) ||
-      l.status?.toLowerCase().includes(filter.toLowerCase())
-  );
+  const search = (filter || "").toLowerCase().trim();
 
-  const filteredShipments = shipments.filter(
-    (s) =>
-      s.shipment_id.toLowerCase().includes(filter.toLowerCase()) ||
-      s.destination.toLowerCase().includes(filter.toLowerCase()) ||
-      s.shipment_status.toLowerCase().includes(filter.toLowerCase()) ||
-      s.lot_id.toLowerCase().includes(filter.toLowerCase())
-  );
+  const safeLots = Array.isArray(lots) ? lots : [];
+  const safeShipments = Array.isArray(shipments) ? shipments : [];
+
+  const filteredLots = safeLots.filter((l) => {
+    if (!l) return false;
+    const lotId = String(l.lot_id || "").toLowerCase();
+    const warehouse = String(l.warehouse_id || "").toLowerCase();
+    const status = String(l.lot_status || l.status || "").toLowerCase();
+    const product = String(l.product_name || "").toLowerCase();
+    return (
+      lotId.includes(search) ||
+      warehouse.includes(search) ||
+      status.includes(search) ||
+      product.includes(search)
+    );
+  });
+
+  const filteredShipments = safeShipments.filter((s) => {
+    if (!s) return false;
+    const shipmentId = String(s.shipment_id || s.id || "").toLowerCase();
+    const destination = String(s.destination || "").toLowerCase();
+    const status = String(s.shipment_status || s.status || "").toLowerCase();
+    const lotId = String(s.lot_id || "").toLowerCase();
+    return (
+      shipmentId.includes(search) ||
+      destination.includes(search) ||
+      status.includes(search) ||
+      lotId.includes(search)
+    );
+  });
+
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -56,7 +75,7 @@ export default function InventoryTable({ lots, shipments }: Props) {
                   : "text-slate-500 hover:text-slate-800"
               }`}
             >
-              Shipments ({shipments.length})
+              Shipments ({safeShipments.length})
             </button>
             <button
               onClick={() => setTab("lots")}
@@ -66,7 +85,7 @@ export default function InventoryTable({ lots, shipments }: Props) {
                   : "text-slate-500 hover:text-slate-800"
               }`}
             >
-              Lots ({lots.length})
+              Lots ({safeLots.length})
             </button>
           </div>
         </div>
@@ -88,16 +107,18 @@ export default function InventoryTable({ lots, shipments }: Props) {
             </thead>
             <tbody className="divide-y divide-slate-100 font-mono">
               {filteredShipments.map((s, idx) => {
-                const isHeld = s.shipment_status === "ON_HOLD";
-                const isDelivered = s.shipment_status === "DELIVERED";
+                const shipmentId = s.shipment_id || s.id || "N/A";
+                const shipmentStatus = s.shipment_status || s.status || "UNKNOWN";
+                const isHeld = shipmentStatus === "ON_HOLD";
+                const isDelivered = shipmentStatus === "DELIVERED";
 
                 return (
                   <tr key={idx} className="hover:bg-slate-50/60">
-                    <td className="p-2 font-bold text-slate-900">{s.shipment_id}</td>
-                    <td className="p-2 font-sans truncate max-w-[180px]">{s.destination}</td>
-                    <td className="p-2 font-sans text-slate-500">{s.destination_type}</td>
-                    <td className="p-2 text-slate-800">{s.lot_id}</td>
-                    <td className="p-2">{s.quantity}</td>
+                    <td className="p-2 font-bold text-slate-900">{shipmentId}</td>
+                    <td className="p-2 font-sans truncate max-w-[180px]">{s.destination || "N/A"}</td>
+                    <td className="p-2 font-sans text-slate-500">{s.destination_type || "N/A"}</td>
+                    <td className="p-2 text-slate-800">{s.lot_id || "-"}</td>
+                    <td className="p-2">{s.quantity ?? "-"}</td>
                     <td className="p-2">
                       <span
                         className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
@@ -108,7 +129,7 @@ export default function InventoryTable({ lots, shipments }: Props) {
                             : "bg-blue-100 text-blue-800"
                         }`}
                       >
-                        {s.shipment_status}
+                        {shipmentStatus}
                       </span>
                     </td>
                   </tr>
@@ -129,14 +150,15 @@ export default function InventoryTable({ lots, shipments }: Props) {
             </thead>
             <tbody className="divide-y divide-slate-100 font-mono">
               {filteredLots.map((l, idx) => {
-                const isQuarantined = l.lot_status === "QUARANTINED";
+                const lotStatus = l.lot_status || l.status || "UNKNOWN";
+                const isQuarantined = lotStatus === "QUARANTINED";
 
                 return (
                   <tr key={idx} className="hover:bg-slate-50/60">
-                    <td className="p-2 font-bold text-slate-900">{l.lot_id}</td>
-                    <td className="p-2 font-sans text-slate-800">{l.product_name}</td>
-                    <td className="p-2 font-sans text-slate-500">{l.warehouse_id}</td>
-                    <td className="p-2">{l.quantity}</td>
+                    <td className="p-2 font-bold text-slate-900">{l.lot_id || "N/A"}</td>
+                    <td className="p-2 font-sans text-slate-800">{l.product_name || "N/A"}</td>
+                    <td className="p-2 font-sans text-slate-500">{l.warehouse_id || "N/A"}</td>
+                    <td className="p-2">{l.quantity ?? "-"}</td>
                     <td className="p-2">
                       <span
                         className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
@@ -145,7 +167,7 @@ export default function InventoryTable({ lots, shipments }: Props) {
                             : "bg-emerald-100 text-emerald-800"
                         }`}
                       >
-                        {l.lot_status}
+                        {lotStatus}
                       </span>
                     </td>
                   </tr>
