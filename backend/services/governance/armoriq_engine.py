@@ -11,6 +11,7 @@ import time
 from typing import Dict, Any, List, Optional
 from backend.database.connection import get_db_connection
 from backend.services.governance.policy_rules import POLICY_RULES
+from backend.services.cache import redis_service
 
 # Load official armoriq_sdk if available
 try:
@@ -53,7 +54,7 @@ class ArmorIQGovernor:
         plan_hash = hashlib.sha256(plan_canonical.encode("utf-8")).hexdigest()
         intent_token = f"tok_iq_{plan_hash[:24]}_{int(time.time())}"
 
-        return {
+        plan_data = {
             "intent_token": intent_token,
             "plan_hash": plan_hash,
             "goal": goal,
@@ -62,17 +63,30 @@ class ArmorIQGovernor:
             "declared_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
         }
 
+        # Cache in Redis for high-speed distributed verification
+        redis_service.set_intent_token(intent_token, plan_data)
+
+        return plan_data
+
     def check_policy(self, tool_name: str, params: Dict[str, Any], intent_token: Optional[str] = None) -> Dict[str, Any]:
         """
         Phase 2: CHECK
         Evaluates planned tool call against the recall safety policy matrix.
         Returns: { verdict: 'ALLOW' | 'HOLD' | 'BLOCK', reason: str }
         """
+        # Validate intent token existence via Redis cache
+        token_active = False
+        if intent_token:
+            cached_plan = redis_service.get_intent_token(intent_token)
+            if cached_plan:
+                token_active = True
+
         if tool_name not in POLICY_RULES:
             return {
                 "verdict": "BLOCK",
                 "tool": tool_name,
-                "reason": f"POLICY_VIOLATION: Tool '{tool_name}' is not in authorized recall response capabilities."
+                "reason": f"POLICY_VIOLATION: Tool '{tool_name}' is not in authorized recall response capabilities.",
+                "token_verified": token_active
             }
 
         rule = POLICY_RULES[tool_name]
@@ -80,7 +94,8 @@ class ArmorIQGovernor:
             "verdict": rule["verdict"],
             "tool": tool_name,
             "reason": rule["reason"],
-            "intent_token": intent_token or "unspecified"
+            "intent_token": intent_token or "unspecified",
+            "token_verified": token_active
         }
 
     def record_action(

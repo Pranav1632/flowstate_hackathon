@@ -5,11 +5,16 @@ Calculates downstream supply-chain node-link graph data for visual impact analys
 
 from typing import Dict, Any, List
 from backend.repositories.inventory_repo import inventory_repo
+from backend.services.cache import redis_service
 
 
 class BlastRadiusService:
     def calculate_blast_radius(self, lot_id: str) -> Dict[str, Any]:
         """Computes node-link graph representation of affected warehouses, shipments, and destinations."""
+        cached = redis_service.get_cached_blast_radius(lot_id)
+        if cached:
+            return cached
+
         lots = inventory_repo.get_lots_by_id(lot_id)
         if not lots:
             return {"nodes": [], "edges": [], "summary": {}}
@@ -81,7 +86,7 @@ class BlastRadiusService:
                 "label": "Route"
             })
 
-        return {
+        result = {
             "nodes": nodes,
             "edges": edges,
             "lot_id": lot_id,
@@ -89,6 +94,8 @@ class BlastRadiusService:
             "total_units": total_units,
             "shipments_count": len(shipments)
         }
+        redis_service.set_cached_blast_radius(lot_id, result)
+        return result
 
 
 blast_radius_service = BlastRadiusService()

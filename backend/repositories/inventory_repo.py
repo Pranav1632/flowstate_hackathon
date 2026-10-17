@@ -5,6 +5,7 @@ Provides direct database operations for products, inventory lots, and shipments.
 
 from typing import List, Dict, Any, Optional
 from backend.database.connection import get_db_connection, rows_to_dicts, row_to_dict
+from backend.services.cache import redis_service
 
 
 class InventoryRepository:
@@ -64,6 +65,7 @@ class InventoryRepository:
         count = cursor.rowcount
         conn.commit()
         conn.close()
+        redis_service.invalidate_blast_cache(lot_id)
         return count
 
     def update_shipment_status(self, shipment_id: str, new_status: str) -> int:
@@ -73,6 +75,7 @@ class InventoryRepository:
         count = cursor.rowcount
         conn.commit()
         conn.close()
+        redis_service.invalidate_blast_cache("LOT-24-A")
         return count
 
 

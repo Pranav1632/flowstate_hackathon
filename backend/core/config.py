@@ -23,6 +23,10 @@ class Settings(BaseModel):
     # Database
     DB_PATH: str = str(os.getenv("DB_FILE", BACKEND_DIR / "recallguard.db"))
 
+    # Redis Cache & Pub/Sub
+    REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+    REDIS_ENABLED: bool = os.getenv("REDIS_ENABLED", "true").lower() == "true"
+
     # AI / LLM Keys & Settings
     GEMINI_API_KEY: str = os.getenv(
         "GEMINI_API_KEY",

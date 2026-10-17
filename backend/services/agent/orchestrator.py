@@ -10,6 +10,7 @@ from backend.services.agent.prompt_builder import RECALL_PARSER_SYSTEM_PROMPT, p
 from backend.services.governance.armoriq_engine import governor
 from backend.mcp.server import InventoryRecallMCP
 from backend.repositories.incident_repo import incident_repo
+from backend.services.cache import redis_service
 
 
 class RecallAgent:
@@ -29,14 +30,21 @@ class RecallAgent:
         if not incident_id:
             incident_id = f"INC-{int(time.time())}"
 
+        def emit(event: Dict[str, Any]) -> Dict[str, Any]:
+            try:
+                redis_service.publish_incident_event(incident_id, event)
+            except Exception:
+                pass
+            return event
+
         # 1. Notice Ingestion Event
-        yield {
+        yield emit({
             "type": "NOTICE_INGESTED",
             "incident_id": incident_id,
             "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
             "content_preview": notice_content[:180] + ("..." if len(notice_content) > 180 else ""),
             "message": "Supplier recall notice ingested. Commencing LLM parsing..."
-        }
+        })
 
         # 2. LLM Structured Extraction
         raw_extraction = self.call_llm(notice_content, RECALL_PARSER_SYSTEM_PROMPT)
@@ -56,30 +64,30 @@ class RecallAgent:
             hazard_description=hazard
         )
 
-        yield {
+        yield emit({
             "type": "EXTRACTION_COMPLETE",
             "incident_id": incident_id,
             "extracted_data": extraction,
             "adversarial_present": adversarial_present,
             "message": f"LLM parsed notice: Target lot is {target_lot} (Severity: {severity}). Adversarial injection detected: {adversarial_present}."
-        }
+        })
 
         # 3. Supply Chain Investigation via MCP
         lot_lookup = InventoryRecallMCP.lookup_product_lot(target_lot)
-        yield {
+        yield emit({
             "type": "MCP_TOOL_EXECUTED",
             "tool": "lookup_product_lot",
             "result": lot_lookup,
             "message": f"MCP lookup_product_lot executed: Product matched '{lot_lookup.get('product', {}).get('product_name', 'Unknown')}'."
-        }
+        })
 
         if lot_lookup.get("status") == "not_found":
-            yield {
+            yield emit({
                 "type": "ANOMALY_UNKNOWN_LOT",
                 "incident_id": incident_id,
                 "lot_id": target_lot,
                 "message": f"SAFETY HALT: Lot '{target_lot}' not found in database. Avoiding unnecessary disruption to unrelated stock."
-            }
+            })
             return
 
         inventory_info = InventoryRecallMCP.get_inventory_by_lot(target_lot)
@@ -95,12 +103,12 @@ class RecallAgent:
             "summary": shipments_info.get("summary", {})
         }
 
-        yield {
+        yield emit({
             "type": "BLAST_RADIUS_COMPUTED",
             "incident_id": incident_id,
             "blast_radius": blast_radius,
             "message": f"Blast radius mapped: {blast_radius['total_warehouse_units']} warehouse units across {len(blast_radius['warehouses'])} facilities, {blast_radius['total_shipments']} downstream shipments."
-        }
+        })
 
         # 4. Plan Declaration to ArmorIQ (Declare Phase)
         planned_steps = []
@@ -139,14 +147,14 @@ class RecallAgent:
         )
         intent_token = plan_declaration["intent_token"]
 
-        yield {
+        yield emit({
             "type": "ARMORIQ_PLAN_DECLARED",
             "incident_id": incident_id,
             "intent_token": intent_token,
             "plan_hash": plan_declaration["plan_hash"],
             "steps": planned_steps,
             "message": f"ArmorIQ Declare Phase complete. Cryptographic Intent Token generated: {intent_token[:20]}..."
-        }
+        })
 
         # 5. Governed Tool Execution (Check -> Execute Phase)
         for step in planned_steps:
@@ -169,7 +177,7 @@ class RecallAgent:
                         reason=f"Held shipment {inputs['shipment_id']} safely under active recall.",
                         intent_token=intent_token
                     )
-                    yield {
+                    yield emit({
                         "type": "ACTION_EXECUTED",
                         "tool": tool_name,
                         "target_id": inputs["shipment_id"],
@@ -177,7 +185,7 @@ class RecallAgent:
                         "status": "EXECUTED",
                         "result": mcp_res,
                         "message": f"ALLOWED: Placed transit hold on shipment {inputs['shipment_id']} ({mcp_res.get('destination')})."
-                    }
+                    })
 
                 elif tool_name == "draft_recall_notice":
                     mcp_res = InventoryRecallMCP.draft_recall_notice(incident_id, target_lot, "Urgent recall alert")
@@ -190,7 +198,7 @@ class RecallAgent:
                         reason="Prepared recall notification draft for compliance officer.",
                         intent_token=intent_token
                     )
-                    yield {
+                    yield emit({
                         "type": "ACTION_EXECUTED",
                         "tool": tool_name,
                         "target_id": target_lot,
@@ -198,7 +206,7 @@ class RecallAgent:
                         "status": "EXECUTED",
                         "result": mcp_res,
                         "message": f"ALLOWED: Prepared official recall notification draft for lot {target_lot}."
-                    }
+                    })
 
             elif verdict == "HOLD":
                 action_id = governor.record_action(
@@ -210,7 +218,7 @@ class RecallAgent:
                     reason=check_result["reason"],
                     intent_token=intent_token
                 )
-                yield {
+                yield emit({
                     "type": "ACTION_HELD_FOR_APPROVAL",
                     "action_id": action_id,
                     "tool": tool_name,
@@ -219,7 +227,7 @@ class RecallAgent:
                     "reason": check_result["reason"],
                     "inputs": inputs,
                     "message": f"HELD FOR APPROVAL: Action '{tool_name}' paused. External broadcasting requires Human-in-the-Loop manager sign-off."
-                }
+                })
 
             elif verdict == "BLOCK":
                 governor.record_action(
@@ -231,7 +239,7 @@ class RecallAgent:
                     reason=check_result["reason"],
                     intent_token=intent_token
                 )
-                yield {
+                yield emit({
                     "type": "ACTION_BLOCKED_POLICY_DENIAL",
                     "tool": tool_name,
                     "target_id": target_lot,
@@ -239,10 +247,10 @@ class RecallAgent:
                     "status": "BLOCKED",
                     "reason": check_result["reason"],
                     "message": f"SECURITY BLOCK (ARMORIQ): Attempt to invoke '{tool_name}' was intercepted and prevented! Reason: {check_result['reason']}"
-                }
+                })
 
         # 6. Containment Summary
-        yield {
+        yield emit({
             "type": "CONTAINMENT_SUMMARY",
             "incident_id": incident_id,
             "status": "GOVERNED_CONTAINMENT_ACTIVE",
@@ -253,7 +261,7 @@ class RecallAgent:
                 "pending_approvals": 1
             },
             "message": "Recall response completed under ArmorIQ governance. Supply chain secured."
-        }
+        })
 
 
 agent = RecallAgent()

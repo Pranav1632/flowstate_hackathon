@@ -6,3 +6,4 @@ python-dotenv>=1.0.0
 google-genai>=2.30.0
 armoriq-sdk>=0.6.10
 pytest>=8.0.0
+redis>=5.0.0
