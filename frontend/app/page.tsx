@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Shield, CheckCircle, AlertCircle, Network, Clock, Database, LayoutGrid } from "lucide-react";
+import { Shield, CheckCircle, AlertCircle, Network, Clock, Database, LayoutGrid, Sparkles } from "lucide-react";
 import BlastRadiusGraph from "@/components/BlastRadiusGraph";
 import ArmorIQPolicyHUD from "@/components/ArmorIQPolicyHUD";
 import ScenarioSelector from "@/components/ScenarioSelector";
 import IncidentTimeline, { TimelineEvent } from "@/components/IncidentTimeline";
 import ApprovalModal from "@/components/ApprovalModal";
 import InventoryTable from "@/components/InventoryTable";
+import LLMReasoningSection from "@/components/LLMReasoningSection";
 
 const API_BASE = "http://localhost:8000";
 
@@ -23,7 +24,8 @@ export default function Home() {
   const [blockedCount, setBlockedCount] = useState<number>(0);
   const [phase, setPhase] = useState<"IDLE" | "DECLARE" | "CHECK" | "EXECUTE" | "COMPLETE">("IDLE");
   const [adversarialBlocked, setAdversarialBlocked] = useState<boolean>(false);
-  const [activeSection, setActiveSection] = useState<"topology" | "audit" | "records" | "all">("topology");
+  const [activeSection, setActiveSection] = useState<"topology" | "reasoning" | "audit" | "records" | "all">("topology");
+  const [llmAnalysis, setLlmAnalysis] = useState<any>(null);
 
   // Database state
   const [inventory, setInventory] = useState<{ lots: any[]; shipments: any[] }>({ lots: [], shipments: [] });
@@ -95,6 +97,7 @@ export default function Home() {
       setPlanHash("");
       setPhase("IDLE");
       setAdversarialBlocked(false);
+      setLlmAnalysis(null);
       await fetchInventory();
       await fetchApprovals();
       await fetchBlastRadius("LOT-24-A");
@@ -111,6 +114,7 @@ export default function Home() {
     setHeldCount(0);
     setBlockedCount(0);
     setAdversarialBlocked(false);
+    setLlmAnalysis(null);
     setPhase("DECLARE");
 
     try {
@@ -144,7 +148,9 @@ export default function Home() {
               const event: TimelineEvent = JSON.parse(jsonStr);
               setEvents((prev) => [event, ...prev]);
 
-              if (event.type === "ARMORIQ_PLAN_DECLARED") {
+              if (event.type === "EXTRACTION_COMPLETE") {
+                setLlmAnalysis(event);
+              } else if (event.type === "ARMORIQ_PLAN_DECLARED") {
                 setIntentToken(event.intent_token || "");
                 setPlanHash((event as any).plan_hash || "");
                 setPhase("CHECK");
@@ -311,6 +317,24 @@ export default function Home() {
 
             <button
               type="button"
+              onClick={() => setActiveSection("reasoning")}
+              className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 font-medium transition-all ${
+                activeSection === "reasoning"
+                  ? "bg-white text-indigo-700 shadow-xs font-semibold ring-1 ring-slate-200/60"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+              <span>AI Reasoning & Safety</span>
+              {llmAnalysis ? (
+                <span className="rounded bg-indigo-50 px-1.5 py-0.5 text-[10px] font-bold text-indigo-700 border border-indigo-100">
+                  Active
+                </span>
+              ) : null}
+            </button>
+
+            <button
+              type="button"
               onClick={() => setActiveSection("audit")}
               className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 font-medium transition-all ${
                 activeSection === "audit"
@@ -382,6 +406,12 @@ export default function Home() {
           />
         )}
 
+        {activeSection === "reasoning" && (
+          <div className="w-full">
+            <LLMReasoningSection data={llmAnalysis} isRunning={isRunning} />
+          </div>
+        )}
+
         {activeSection === "audit" && (
           <div className="w-full">
             <IncidentTimeline events={events} />
@@ -396,6 +426,7 @@ export default function Home() {
 
         {activeSection === "all" && (
           <div className="space-y-6">
+            <LLMReasoningSection data={llmAnalysis} isRunning={isRunning} />
             <BlastRadiusGraph
               data={blastData}
               adversarialBlocked={adversarialBlocked}

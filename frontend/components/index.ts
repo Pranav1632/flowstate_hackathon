@@ -4,6 +4,7 @@ export { default as ScenarioSelector } from "./scenarios/ScenarioSelector";
 export { default as BlastRadiusGraph } from "./visualization/BlastRadiusGraph";
 export { default as IncidentTimeline } from "./timeline/IncidentTimeline";
 export { default as InventoryTable } from "./inventory/InventoryTable";
+export { default as LLMReasoningSection } from "./LLMReasoningSection";
 export { Badge } from "./ui/Badge";
 export { StatCard } from "./ui/StatCard";
 export { Header } from "./layout/Header";
