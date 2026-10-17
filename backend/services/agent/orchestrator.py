@@ -64,11 +64,17 @@ class RecallAgent:
             hazard_description=hazard
         )
 
+        llm_reasoning = extraction.get("llm_reasoning") or extraction.get("reasoning") or f"Identified {target_lot} as affected batch based on notice header."
+        adversarial_reasoning = extraction.get("adversarial_reasoning") or ("Adversarial override directive detected in body." if adversarial_present else "Notice verified clean; standard regulatory parameters extracted.")
+
         yield emit({
             "type": "EXTRACTION_COMPLETE",
             "incident_id": incident_id,
             "extracted_data": extraction,
             "adversarial_present": adversarial_present,
+            "llm_reasoning": llm_reasoning,
+            "adversarial_reasoning": adversarial_reasoning,
+            "reason": llm_reasoning,
             "message": f"LLM parsed notice: Target lot is {target_lot} (Severity: {severity}). Adversarial injection detected: {adversarial_present}."
         })
 

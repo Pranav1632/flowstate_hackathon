@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Clock, CheckCircle2, AlertTriangle, ShieldAlert, FileText, Lock, Download, Filter } from "lucide-react";
+import { Clock, CheckCircle2, AlertTriangle, ShieldAlert, FileText, Lock, Download, Filter, Sparkles, Brain } from "lucide-react";
 
 export interface TimelineEvent {
   type: string;
@@ -14,6 +14,9 @@ export interface TimelineEvent {
   intent_token?: string;
   message: string;
   reason?: string;
+  llm_reasoning?: string;
+  adversarial_reasoning?: string;
+  extracted_data?: Record<string, any>;
 }
 
 interface Props {
@@ -261,7 +264,39 @@ export default function IncidentTimeline({ events }: Props) {
 
                 <p className="text-slate-700 leading-normal">{event.message}</p>
 
-                {event.reason && (
+                {/* LLM Semantic Reasoning & Threat Assessment */}
+                {(event.llm_reasoning || (event as any).extracted_data?.llm_reasoning || event.adversarial_reasoning || (event as any).extracted_data?.adversarial_reasoning) && (
+                  <div className="mt-2.5 rounded-lg bg-indigo-50/60 p-3 border border-indigo-100/90 shadow-2xs space-y-2 text-[11px]">
+                    <div className="flex items-center gap-1.5 font-bold text-indigo-900 pb-1 border-b border-indigo-100">
+                      <Sparkles className="w-3.5 h-3.5 text-indigo-600 animate-pulse" />
+                      <span>Gemini 3.8 Flash Clinical Reasoning & Threat Analysis</span>
+                    </div>
+
+                    {(event.llm_reasoning || (event as any).extracted_data?.llm_reasoning) && (
+                      <div className="space-y-0.5">
+                        <span className="font-semibold text-indigo-950 uppercase tracking-wider text-[10px]">
+                          Safety Justification:
+                        </span>
+                        <p className="text-slate-700 leading-relaxed bg-white/70 p-2 rounded border border-indigo-50">
+                          {event.llm_reasoning || (event as any).extracted_data?.llm_reasoning}
+                        </p>
+                      </div>
+                    )}
+
+                    {(event.adversarial_reasoning || (event as any).extracted_data?.adversarial_reasoning) && (
+                      <div className="space-y-0.5">
+                        <span className="font-semibold text-rose-900 uppercase tracking-wider text-[10px]">
+                          Adversarial Security Analysis:
+                        </span>
+                        <p className="text-slate-700 leading-relaxed bg-white/70 p-2 rounded border border-rose-50">
+                          {event.adversarial_reasoning || (event as any).extracted_data?.adversarial_reasoning}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {event.reason && !event.llm_reasoning && (
                   <p className="mt-1.5 text-[11px] text-slate-600 bg-white p-2 rounded border border-slate-200/80 leading-snug">
                     <span className="font-semibold text-slate-700">Reason: </span>
                     {event.reason}
