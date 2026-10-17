@@ -257,137 +257,8 @@ export default function Home() {
 
   return (
     <div className="flex h-screen bg-slate-100 text-slate-900 font-sans overflow-hidden">
-      {/* 1. LEFT ENTERPRISE ICON SIDEBAR (Matching User's ArmorIQ Screenshot) */}
-      <aside className="w-16 flex flex-col items-center justify-between py-4 bg-white border-r border-slate-200 z-30 shrink-0">
-        <div className="flex flex-col items-center gap-6 w-full">
-          {/* Brand Logo (Violet Shield icon) */}
-          <button
-            type="button"
-            onClick={() => setActiveSection("overview")}
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-purple-700 text-white shadow-md shadow-violet-500/25 hover:scale-105 transition-transform"
-            title="RecallGuard Mission Control"
-          >
-            <Shield className="w-5 h-5" />
-          </button>
-
-          {/* Navigation Icon List with Violet Badges */}
-          <nav className="flex flex-col items-center gap-2 w-full px-2">
-            {/* Overview */}
-            <button
-              type="button"
-              onClick={() => setActiveSection("overview")}
-              className={`relative flex flex-col items-center justify-center h-10 w-10 rounded-lg transition-colors ${
-                activeSection === "overview"
-                  ? "bg-violet-50 text-violet-700 font-bold"
-                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-              }`}
-              title="Overview"
-            >
-              <LayoutGrid className="w-4 h-4" />
-              <span className="text-[8px] font-medium mt-0.5">Overview</span>
-            </button>
-
-            {/* Policies */}
-            <button
-              type="button"
-              onClick={() => setActiveSection("policies")}
-              className={`relative flex flex-col items-center justify-center h-10 w-10 rounded-lg transition-colors ${
-                activeSection === "policies"
-                  ? "bg-violet-50 text-violet-700 font-bold"
-                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-              }`}
-              title="Policies"
-            >
-              <span className="absolute -top-1 -right-1 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-violet-600 text-[9px] font-bold text-white">
-                5
-              </span>
-              <Shield className="w-4 h-4" />
-              <span className="text-[8px] font-medium mt-0.5">Policies</span>
-            </button>
-
-            {/* Topology Graph */}
-            <button
-              type="button"
-              onClick={() => setActiveSection("topology")}
-              className={`relative flex flex-col items-center justify-center h-10 w-10 rounded-lg transition-colors ${
-                activeSection === "topology"
-                  ? "bg-violet-50 text-violet-700 font-bold"
-                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-              }`}
-              title="Topology Graph"
-            >
-              <Network className="w-4 h-4" />
-              <span className="text-[8px] font-medium mt-0.5">Graph</span>
-            </button>
-
-            {/* AI Reasoning (Gemini 3.8 Flash) */}
-            <button
-              type="button"
-              onClick={() => setActiveSection("reasoning")}
-              className={`relative flex flex-col items-center justify-center h-10 w-10 rounded-lg transition-colors ${
-                activeSection === "reasoning"
-                  ? "bg-violet-50 text-violet-700 font-bold"
-                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-              }`}
-              title="AI Clinical Reasoning & Safety"
-            >
-              {llmAnalysis && (
-                <span className="absolute -top-1 -right-1 flex h-2 w-2 rounded-full bg-violet-600 animate-pulse" />
-              )}
-              <Sparkles className="w-4 h-4 text-violet-600" />
-              <span className="text-[8px] font-medium mt-0.5">AI</span>
-            </button>
-
-            {/* Activity & Decisions (Audit Trail) */}
-            <button
-              type="button"
-              onClick={() => setActiveSection("audit")}
-              className={`relative flex flex-col items-center justify-center h-10 w-10 rounded-lg transition-colors ${
-                activeSection === "audit"
-                  ? "bg-violet-50 text-violet-700 font-bold"
-                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-              }`}
-              title="Activity & Decisions"
-            >
-              {events.length > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-slate-700 text-[9px] font-bold text-white">
-                  {events.length}
-                </span>
-              )}
-              <Clock className="w-4 h-4" />
-              <span className="text-[8px] font-medium mt-0.5">Activity</span>
-            </button>
-
-            {/* Inventory & Shipments */}
-            <button
-              type="button"
-              onClick={() => setActiveSection("records")}
-              className={`relative flex flex-col items-center justify-center h-10 w-10 rounded-lg transition-colors ${
-                activeSection === "records"
-                  ? "bg-violet-50 text-violet-700 font-bold"
-                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-              }`}
-              title="Inventory Records"
-            >
-              <Database className="w-4 h-4" />
-              <span className="text-[8px] font-medium mt-0.5">Inventory</span>
-            </button>
-          </nav>
-        </div>
-
-        {/* Bottom Officer Avatar (RG = RecallGuard) */}
-        <div className="flex flex-col items-center gap-3">
-          <div
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 text-violet-700 font-bold text-xs border border-violet-200 shadow-2xs"
-            title="RecallGuard Officer"
-          >
-            RG
-          </div>
-        </div>
-      </aside>
-
-      {/* 2. MAIN CONTAINER (Full-Width, Big & Expanding across all columns) */}
-      <div className="flex-1 flex flex-col h-screen overflow-hidden">
+      {/* 1. MAIN CONTAINER (Full-Width, Expanding across all columns on left/center) */}
+      <div className="flex-1 min-w-0 flex flex-col h-screen overflow-hidden">
         {/* Top Enterprise Header (Original RecallGuard Branding, No Copied Workspace) */}
         <header className="h-14 border-b border-slate-200 bg-white flex items-center justify-between px-6 shrink-0 z-20">
           {/* Authentic RecallGuard Breadcrumb */}
@@ -537,6 +408,158 @@ export default function Home() {
           )}
         </main>
       </div>
+
+      {/* 2. RIGHT ENTERPRISE NAVIGATION PANEL (Big in size with Large Logo) */}
+      <aside className="w-28 sm:w-32 flex flex-col items-center justify-between py-5 bg-white border-l border-slate-200 z-30 shrink-0 shadow-sm">
+        <div className="flex flex-col items-center gap-6 w-full px-2">
+          {/* Large Brand Logo Header */}
+          <div className="flex flex-col items-center gap-1.5 w-full">
+            <button
+              type="button"
+              onClick={() => setActiveSection("overview")}
+              className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 text-white shadow-lg shadow-violet-500/30 hover:scale-105 active:scale-95 transition-all duration-200 group"
+              title="RecallGuard Mission Control"
+            >
+              <Shield className="w-7 h-7 text-white stroke-[2.2] group-hover:rotate-6 transition-transform" />
+            </button>
+            <div className="flex flex-col items-center text-center">
+              <span className="text-[11px] font-black tracking-tight text-slate-900 leading-tight">
+                RecallGuard
+              </span>
+              <span className="text-[9px] font-bold text-violet-700 bg-violet-50 px-2 py-0.5 rounded-full border border-violet-200/80 mt-0.5">
+                ArmorIQ
+              </span>
+            </div>
+          </div>
+
+          <div className="w-full h-px bg-slate-200/80" />
+
+          {/* Large Navigation Buttons */}
+          <nav className="flex flex-col items-center gap-2.5 w-full">
+            {/* Overview */}
+            <button
+              type="button"
+              onClick={() => setActiveSection("overview")}
+              className={`relative flex flex-col items-center justify-center w-full py-2.5 px-1 rounded-xl transition-all duration-150 group ${
+                activeSection === "overview"
+                  ? "bg-violet-100 text-violet-800 font-bold shadow-xs border border-violet-300/80"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-transparent"
+              }`}
+              title="Mission Control Overview"
+            >
+              <LayoutGrid className={`w-5 h-5 mb-1 transition-transform group-hover:scale-110 ${activeSection === "overview" ? "text-violet-700" : "text-slate-500"}`} />
+              <span className="text-[11px] font-semibold tracking-tight">Overview</span>
+            </button>
+
+            {/* Policies (with 5 badge) */}
+            <button
+              type="button"
+              onClick={() => setActiveSection("policies")}
+              className={`relative flex flex-col items-center justify-center w-full py-2.5 px-1 rounded-xl transition-all duration-150 group ${
+                activeSection === "policies"
+                  ? "bg-violet-100 text-violet-800 font-bold shadow-xs border border-violet-300/80"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-transparent"
+              }`}
+              title="ArmorIQ Policy Studio (5 Active Rules)"
+            >
+              <span className="absolute top-1.5 right-2 flex h-5 min-w-5 px-1.5 items-center justify-center rounded-full bg-violet-600 text-[10px] font-black text-white shadow-xs ring-2 ring-white">
+                5
+              </span>
+              <Shield className={`w-5 h-5 mb-1 transition-transform group-hover:scale-110 ${activeSection === "policies" ? "text-violet-700" : "text-slate-500"}`} />
+              <span className="text-[11px] font-semibold tracking-tight">Policies</span>
+            </button>
+
+            {/* Graph */}
+            <button
+              type="button"
+              onClick={() => setActiveSection("topology")}
+              className={`relative flex flex-col items-center justify-center w-full py-2.5 px-1 rounded-xl transition-all duration-150 group ${
+                activeSection === "topology"
+                  ? "bg-violet-100 text-violet-800 font-bold shadow-xs border border-violet-300/80"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-transparent"
+              }`}
+              title="Supply Chain Topology Graph"
+            >
+              <Network className={`w-5 h-5 mb-1 transition-transform group-hover:scale-110 ${activeSection === "topology" ? "text-violet-700" : "text-slate-500"}`} />
+              <span className="text-[11px] font-semibold tracking-tight">Graph</span>
+            </button>
+
+            {/* AI */}
+            <button
+              type="button"
+              onClick={() => setActiveSection("reasoning")}
+              className={`relative flex flex-col items-center justify-center w-full py-2.5 px-1 rounded-xl transition-all duration-150 group ${
+                activeSection === "reasoning"
+                  ? "bg-violet-100 text-violet-800 font-bold shadow-xs border border-violet-300/80"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-transparent"
+              }`}
+              title="Gemini 3.8 Flash Clinical Reasoning & Threat Analysis"
+            >
+              {llmAnalysis && (
+                <span className="absolute top-1.5 right-3 flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-violet-600" />
+                </span>
+              )}
+              <Sparkles className="w-5 h-5 mb-1 text-violet-600 transition-transform group-hover:scale-110" />
+              <span className="text-[11px] font-semibold tracking-tight">AI</span>
+            </button>
+
+            {/* Activity */}
+            <button
+              type="button"
+              onClick={() => setActiveSection("audit")}
+              className={`relative flex flex-col items-center justify-center w-full py-2.5 px-1 rounded-xl transition-all duration-150 group ${
+                activeSection === "audit"
+                  ? "bg-violet-100 text-violet-800 font-bold shadow-xs border border-violet-300/80"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-transparent"
+              }`}
+              title="Activity & Live Decision Timeline"
+            >
+              {events.length > 0 && (
+                <span className="absolute top-1.5 right-2 flex h-5 min-w-5 px-1.5 items-center justify-center rounded-full bg-slate-800 text-[10px] font-black text-white shadow-xs ring-2 ring-white">
+                  {events.length}
+                </span>
+              )}
+              <Clock className={`w-5 h-5 mb-1 transition-transform group-hover:scale-110 ${activeSection === "audit" ? "text-violet-700" : "text-slate-500"}`} />
+              <span className="text-[11px] font-semibold tracking-tight">Activity</span>
+            </button>
+
+            {/* Inventory */}
+            <button
+              type="button"
+              onClick={() => setActiveSection("records")}
+              className={`relative flex flex-col items-center justify-center w-full py-2.5 px-1 rounded-xl transition-all duration-150 group ${
+                activeSection === "records"
+                  ? "bg-violet-100 text-violet-800 font-bold shadow-xs border border-violet-300/80"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-transparent"
+              }`}
+              title="Downstream Inventory & Shipments"
+            >
+              <Database className={`w-5 h-5 mb-1 transition-transform group-hover:scale-110 ${activeSection === "records" ? "text-violet-700" : "text-slate-500"}`} />
+              <span className="text-[11px] font-semibold tracking-tight">Inventory</span>
+            </button>
+          </nav>
+        </div>
+
+        {/* Bottom Officer Status Badge */}
+        <div className="flex flex-col items-center gap-1.5 px-2">
+          <div className="relative">
+            <div
+              className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-violet-100 to-purple-100 text-violet-800 font-black text-xs border border-violet-200 shadow-2xs"
+              title="RecallGuard Officer (Active Session)"
+            >
+              RG
+            </div>
+            <span className="absolute -bottom-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-white">
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
+            </span>
+          </div>
+          <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">
+            Officer
+          </span>
+        </div>
+      </aside>
 
       {/* Human-in-the-Loop Review Modal */}
       <ApprovalModal

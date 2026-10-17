@@ -47,7 +47,11 @@ class RecallAgent:
         })
 
         # 2. LLM Structured Extraction
-        raw_extraction = self.call_llm(notice_content, RECALL_PARSER_SYSTEM_PROMPT)
+        try:
+            raw_extraction = self.call_llm(notice_content, RECALL_PARSER_SYSTEM_PROMPT)
+        except Exception as e:
+            print(f"[RecallAgent] Notice parsing with LLM failed ({e}), using resilient structured parser.")
+            raw_extraction = ""
         extraction = parse_extraction_response(raw_extraction, notice_content)
 
         target_lot = extraction.get("lot_id", "LOT-24-A")
