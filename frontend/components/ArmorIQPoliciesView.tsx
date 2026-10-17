@@ -88,20 +88,20 @@ export default function ArmorIQPoliciesView() {
             type="button"
             className="flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 px-3.5 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs transition-colors"
           >
-            <FileCode className="w-3.5 h-3.5 text-slate-500" />
+            <FileCode className="w-3.5 h-3.5 text-violet-600" />
             <span>Import YAML</span>
           </button>
         </div>
       </div>
 
-      {/* Filter Tabs matching user's screenshot */}
+      {/* Filter Tabs matching user's screenshot with Violet styling */}
       <div className="flex items-center gap-6 border-b border-slate-200 text-xs">
         <button
           type="button"
           onClick={() => setFilter("All")}
           className={`pb-2.5 font-semibold flex items-center gap-1.5 border-b-2 transition-all ${
             filter === "All"
-              ? "border-orange-500 text-orange-600"
+              ? "border-violet-600 text-violet-700"
               : "border-transparent text-slate-500 hover:text-slate-800"
           }`}
         >
@@ -114,7 +114,7 @@ export default function ArmorIQPoliciesView() {
           onClick={() => setFilter("Active")}
           className={`pb-2.5 font-semibold flex items-center gap-1.5 border-b-2 transition-all ${
             filter === "Active"
-              ? "border-orange-500 text-orange-600"
+              ? "border-violet-600 text-violet-700"
               : "border-transparent text-slate-500 hover:text-slate-800"
           }`}
         >
@@ -150,7 +150,7 @@ export default function ArmorIQPoliciesView() {
         </button>
       </div>
 
-      {/* Policies Table matching screenshot */}
+      {/* Policies Table with Violet theme */}
       <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-2xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
@@ -171,10 +171,10 @@ export default function ArmorIQPoliciesView() {
 
                 return (
                   <tr key={pol.id} className="hover:bg-slate-50/60 transition-colors">
-                    {/* Policy Name & Icon */}
+                    {/* Policy Name & Violet Icon */}
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-md border border-orange-200 bg-orange-50 text-orange-600">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-md border border-violet-200 bg-violet-50 text-violet-600">
                           <Shield className="w-4 h-4" />
                         </div>
                         <div>

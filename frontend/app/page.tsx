@@ -260,17 +260,17 @@ export default function Home() {
       {/* 1. LEFT ENTERPRISE ICON SIDEBAR (Matching User's ArmorIQ Screenshot) */}
       <aside className="w-16 flex flex-col items-center justify-between py-4 bg-white border-r border-slate-200 z-30 shrink-0">
         <div className="flex flex-col items-center gap-6 w-full">
-          {/* Brand Logo (Orange Shield/Flame icon matching screenshot) */}
+          {/* Brand Logo (Violet Shield icon) */}
           <button
             type="button"
             onClick={() => setActiveSection("overview")}
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 text-white shadow-md shadow-orange-500/20 hover:scale-105 transition-transform"
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-purple-700 text-white shadow-md shadow-violet-500/25 hover:scale-105 transition-transform"
             title="RecallGuard Mission Control"
           >
             <Shield className="w-5 h-5" />
           </button>
 
-          {/* Navigation Icon List with Badges */}
+          {/* Navigation Icon List with Violet Badges */}
           <nav className="flex flex-col items-center gap-2 w-full px-2">
             {/* Overview */}
             <button
@@ -278,7 +278,7 @@ export default function Home() {
               onClick={() => setActiveSection("overview")}
               className={`relative flex flex-col items-center justify-center h-10 w-10 rounded-lg transition-colors ${
                 activeSection === "overview"
-                  ? "bg-orange-50 text-orange-600"
+                  ? "bg-violet-50 text-violet-700 font-bold"
                   : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
               }`}
               title="Overview"
@@ -287,18 +287,18 @@ export default function Home() {
               <span className="text-[8px] font-medium mt-0.5">Overview</span>
             </button>
 
-            {/* Policies (Matching Screenshot badge 14/5) */}
+            {/* Policies */}
             <button
               type="button"
               onClick={() => setActiveSection("policies")}
               className={`relative flex flex-col items-center justify-center h-10 w-10 rounded-lg transition-colors ${
                 activeSection === "policies"
-                  ? "bg-orange-50 text-orange-600 font-bold"
+                  ? "bg-violet-50 text-violet-700 font-bold"
                   : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
               }`}
               title="Policies"
             >
-              <span className="absolute -top-1 -right-1 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-orange-500 text-[9px] font-bold text-white">
+              <span className="absolute -top-1 -right-1 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-violet-600 text-[9px] font-bold text-white">
                 5
               </span>
               <Shield className="w-4 h-4" />
@@ -311,7 +311,7 @@ export default function Home() {
               onClick={() => setActiveSection("topology")}
               className={`relative flex flex-col items-center justify-center h-10 w-10 rounded-lg transition-colors ${
                 activeSection === "topology"
-                  ? "bg-orange-50 text-orange-600"
+                  ? "bg-violet-50 text-violet-700 font-bold"
                   : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
               }`}
               title="Topology Graph"
@@ -326,15 +326,15 @@ export default function Home() {
               onClick={() => setActiveSection("reasoning")}
               className={`relative flex flex-col items-center justify-center h-10 w-10 rounded-lg transition-colors ${
                 activeSection === "reasoning"
-                  ? "bg-orange-50 text-orange-600 font-bold"
+                  ? "bg-violet-50 text-violet-700 font-bold"
                   : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
               }`}
               title="AI Clinical Reasoning & Safety"
             >
               {llmAnalysis && (
-                <span className="absolute -top-1 -right-1 flex h-2 w-2 rounded-full bg-indigo-500 animate-pulse" />
+                <span className="absolute -top-1 -right-1 flex h-2 w-2 rounded-full bg-violet-600 animate-pulse" />
               )}
-              <Sparkles className="w-4 h-4 text-indigo-600" />
+              <Sparkles className="w-4 h-4 text-violet-600" />
               <span className="text-[8px] font-medium mt-0.5">AI</span>
             </button>
 
@@ -344,7 +344,7 @@ export default function Home() {
               onClick={() => setActiveSection("audit")}
               className={`relative flex flex-col items-center justify-center h-10 w-10 rounded-lg transition-colors ${
                 activeSection === "audit"
-                  ? "bg-orange-50 text-orange-600"
+                  ? "bg-violet-50 text-violet-700 font-bold"
                   : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
               }`}
               title="Activity & Decisions"
@@ -364,7 +364,7 @@ export default function Home() {
               onClick={() => setActiveSection("records")}
               className={`relative flex flex-col items-center justify-center h-10 w-10 rounded-lg transition-colors ${
                 activeSection === "records"
-                  ? "bg-orange-50 text-orange-600"
+                  ? "bg-violet-50 text-violet-700 font-bold"
                   : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
               }`}
               title="Inventory Records"
@@ -375,35 +375,31 @@ export default function Home() {
           </nav>
         </div>
 
-        {/* Bottom User Avatar matching screenshot "SK" */}
+        {/* Bottom Officer Avatar (RG = RecallGuard) */}
         <div className="flex flex-col items-center gap-3">
           <div
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 text-orange-700 font-bold text-xs border border-orange-200 shadow-2xs"
-            title="User: shivam kumar (RecallGuard Officer)"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 text-violet-700 font-bold text-xs border border-violet-200 shadow-2xs"
+            title="RecallGuard Officer"
           >
-            SK
+            RG
           </div>
         </div>
       </aside>
 
-      {/* 2. MAIN CONTAINER */}
+      {/* 2. MAIN CONTAINER (Full-Width, Big & Expanding across all columns) */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        {/* Top Enterprise Workspace Header (Matching User's Screenshot) */}
+        {/* Top Enterprise Header (Original RecallGuard Branding, No Copied Workspace) */}
         <header className="h-14 border-b border-slate-200 bg-white flex items-center justify-between px-6 shrink-0 z-20">
-          {/* Breadcrumb matching screenshot */}
-          <div className="flex items-center gap-3 text-xs">
-            <span className="font-semibold text-slate-800">Flowstate</span>
-            <span className="text-slate-300">|</span>
-            <span className="font-semibold text-slate-800">RecallGuard</span>
-            <span className="text-slate-300">|</span>
-            <span className="font-bold text-orange-600">ArmorIQ</span>
-
-            <div className="hidden sm:flex items-center gap-1.5 ml-2 pl-3 border-l border-slate-200 text-slate-600 font-medium">
-              <span className="text-slate-400">/</span>
-              <span className="text-slate-800 font-semibold">shivam kumar&apos;s Workspace</span>
-              <span className="text-slate-400">/</span>
-              <span className="text-orange-600 font-bold">{sectionLabels[activeSection]}</span>
-            </div>
+          {/* Authentic RecallGuard Breadcrumb */}
+          <div className="flex items-center gap-2.5 text-xs">
+            <span className="font-extrabold text-slate-900 tracking-tight text-sm">RecallGuard</span>
+            <span className="rounded bg-violet-50 px-2 py-0.5 text-[10px] font-bold text-violet-700 border border-violet-200">
+              Mission Control
+            </span>
+            <span className="text-slate-300">/</span>
+            <span className="hidden sm:inline text-slate-500 font-medium">Incident Governance</span>
+            <span className="text-slate-300 hidden sm:inline">/</span>
+            <span className="font-bold text-violet-700">{sectionLabels[activeSection]}</span>
           </div>
 
           {/* Search bar & Live Badges */}
@@ -416,7 +412,7 @@ export default function Home() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search..."
-                className="w-48 lg:w-64 pl-8 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-orange-500 text-slate-800 placeholder-slate-400"
+                className="w-48 lg:w-64 pl-8 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-violet-500 text-slate-800 placeholder-slate-400"
               />
             </div>
 
@@ -424,10 +420,10 @@ export default function Home() {
             <button
               type="button"
               onClick={() => setViewMode("landing")}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-semibold text-slate-700 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-violet-200 bg-violet-50 hover:bg-violet-100 text-xs font-semibold text-violet-700 transition-colors"
               title="View Public Landing Page"
             >
-              <Layers className="w-3.5 h-3.5 text-orange-600" />
+              <Layers className="w-3.5 h-3.5 text-violet-600" />
               <span className="hidden sm:inline">Landing Page</span>
             </button>
 
@@ -438,16 +434,16 @@ export default function Home() {
                 <span className="font-medium">Gemini 3.8 Flash</span>
               </div>
 
-              <div className="flex items-center gap-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-emerald-800 shadow-2xs text-[11px]">
-                <span className="flex h-2 w-2 rounded-full bg-emerald-600" />
+              <div className="flex items-center gap-1.5 rounded-md border border-violet-200 bg-violet-50 px-2.5 py-1 text-violet-800 shadow-2xs text-[11px]">
+                <span className="flex h-2 w-2 rounded-full bg-violet-600" />
                 <span className="font-semibold">ArmorIQ Active</span>
               </div>
             </div>
           </div>
         </header>
 
-        {/* Dynamic Main Workspace View */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl w-full mx-auto">
+        {/* Dynamic Main Workspace View (FULL WIDTH, BIG IN SIZE, FILLS ALL COLUMNS) */}
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 w-full max-w-none">
           {/* VIEW: POLICIES (Matching User's Screenshot Exactly) */}
           {activeSection === "policies" && <ArmorIQPoliciesView />}
 
