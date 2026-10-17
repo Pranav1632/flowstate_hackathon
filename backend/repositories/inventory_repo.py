@@ -5,7 +5,7 @@ Provides direct database operations for products, inventory lots, and shipments.
 
 from typing import List, Dict, Any, Optional
 from backend.database.connection import get_db_connection, rows_to_dicts, row_to_dict
-from backend.services.cache import redis_service
+from backend.services.cache.redis_client import redis_service
 
 
 class InventoryRepository:

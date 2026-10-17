@@ -264,6 +264,8 @@ export default function Home() {
             onSelectScenario={(id) => {
               if (id === "unknown_lot") {
                 fetchBlastRadius("UNKNOWN-LOT");
+              } else if (id.startsWith("heparin")) {
+                fetchBlastRadius("LOT-CAR-01");
               } else {
                 fetchBlastRadius("LOT-24-A");
               }
