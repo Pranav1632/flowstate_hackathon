@@ -29,13 +29,24 @@ export default function Home() {
   const [inventory, setInventory] = useState<{ lots: any[]; shipments: any[] }>({ lots: [], shipments: [] });
   const [approvals, setApprovals] = useState<any[]>([]);
   const [isDeciding, setIsDeciding] = useState<boolean>(false);
+  const [redisStatus, setRedisStatus] = useState<any>(null);
 
   useEffect(() => {
     fetchScenarios();
     fetchInventory();
     fetchApprovals();
+    fetchRedisStatus();
     fetchBlastRadius("LOT-24-A");
   }, []);
+
+  const fetchRedisStatus = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/system/redis`);
+      if (res.ok) setRedisStatus(await res.json());
+    } catch (e) {
+      console.error("Error fetching redis status:", e);
+    }
+  };
 
   const fetchScenarios = async () => {
     try {
@@ -87,6 +98,7 @@ export default function Home() {
       await fetchInventory();
       await fetchApprovals();
       await fetchBlastRadius("LOT-24-A");
+      await fetchRedisStatus();
     } catch (e) {
       console.error("Reset failed:", e);
     }
@@ -219,7 +231,7 @@ export default function Home() {
         </div>
 
         {/* Status badges */}
-        <div className="flex items-center gap-3 text-xs">
+        <div className="flex flex-wrap items-center gap-2.5 text-xs">
           <div className="flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-slate-700 shadow-2xs">
             <span className="flex h-2 w-2 rounded-full bg-emerald-500" />
             <span className="font-medium">Gemini 3.8 Flash</span>
@@ -227,7 +239,18 @@ export default function Home() {
 
           <div className="flex items-center gap-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-emerald-800 shadow-2xs">
             <span className="flex h-2 w-2 rounded-full bg-emerald-600" />
-            <span className="font-semibold">ArmorIQ Protection Active</span>
+            <span className="font-semibold">ArmorIQ Intent Guard</span>
+          </div>
+
+          <div className="flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-slate-700 shadow-2xs">
+            <span
+              className={`flex h-2 w-2 rounded-full ${
+                redisStatus?.available ? "bg-red-500 animate-pulse" : "bg-amber-500"
+              }`}
+            />
+            <span className="font-medium">
+              {redisStatus?.available ? "Redis: Cache & Pub/Sub" : "Redis: In-Memory Fallback"}
+            </span>
           </div>
         </div>
       </header>

@@ -66,5 +66,22 @@ class IncidentRepository:
         conn.close()
         return rows
 
+    def get_latest_incident(self) -> Optional[Dict[str, Any]]:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM recall_incidents ORDER BY created_at DESC LIMIT 1")
+        row = cursor.fetchone()
+        conn.close()
+        return row_to_dict(row)
+
+    def get_all_actions(self) -> List[Dict[str, Any]]:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM incident_actions ORDER BY created_at DESC")
+        rows = rows_to_dicts(cursor.fetchall())
+        conn.close()
+        return rows
+
 
 incident_repo = IncidentRepository()
+

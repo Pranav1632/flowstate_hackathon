@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { ShieldAlert, Warehouse, Truck, MapPin, AlertCircle, ShieldCheck } from "lucide-react";
+import React, { useState } from "react";
+import { ShieldAlert, Warehouse, Truck, MapPin, AlertCircle, ShieldCheck, X } from "lucide-react";
 
 interface GraphData {
   nodes: Array<{
@@ -32,6 +32,27 @@ interface Props {
 }
 
 export default function BlastRadiusGraph({ data, adversarialBlocked, onSelectSample }: Props) {
+  const [probeResult, setProbeResult] = useState<any>(null);
+  const [isProbing, setIsProbing] = useState<boolean>(false);
+
+  const handleAttemptRelease = async () => {
+    setIsProbing(true);
+    try {
+      const res = await fetch("http://localhost:8000/api/governance/attempt-release", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lot_id: data?.lot_id || "LOT-24-A" })
+      });
+      if (res.ok) {
+        setProbeResult(await res.json());
+      }
+    } catch (e) {
+      console.error("Probe error:", e);
+    } finally {
+      setIsProbing(false);
+    }
+  };
+
   if (!data || !data.nodes || data.nodes.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-72 rounded-xl border border-slate-200 bg-white p-6 text-center text-slate-500 shadow-sm">
@@ -100,6 +121,18 @@ export default function BlastRadiusGraph({ data, adversarialBlocked, onSelectSam
               </span>
               <p className="font-mono text-base font-bold text-slate-900">{lotNode.label}</p>
               <p className="text-xs text-slate-600 mt-1">{lotNode.sublabel}</p>
+
+              {/* Interactive Security Probe Test Button */}
+              <button
+                type="button"
+                onClick={handleAttemptRelease}
+                disabled={isProbing}
+                className="mt-3 flex items-center justify-center gap-1.5 rounded-md border border-rose-300 bg-rose-100 hover:bg-rose-200 text-rose-900 py-1.5 px-2 text-[10px] font-bold uppercase tracking-wider transition-colors shadow-2xs disabled:opacity-50"
+                title="Test ArmorIQ policy boundary: attempts manual release to verify cryptographic blockage"
+              >
+                <ShieldAlert className="w-3.5 h-3.5 text-rose-700" />
+                <span>{isProbing ? "Testing ArmorIQ..." : "Probe Release (Test)"}</span>
+              </button>
             </div>
           )}
         </div>
@@ -204,6 +237,42 @@ export default function BlastRadiusGraph({ data, adversarialBlocked, onSelectSam
           <span className="font-mono text-[10px] font-bold uppercase tracking-wider bg-rose-200/70 text-rose-900 px-2 py-1 rounded shrink-0">
             ARMORIQ ENFORCED
           </span>
+        </div>
+      )}
+
+      {/* Interactive Probe Interception Feedback Card */}
+      {probeResult && (
+        <div className="mt-4 flex items-start justify-between rounded-xl border-2 border-rose-400 bg-rose-50/90 p-4 shadow-sm text-xs text-rose-950">
+          <div className="flex items-start gap-3">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-rose-600 text-white shadow-xs">
+              <ShieldAlert className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <p className="font-bold text-sm text-rose-900">
+                  ArmorIQ Policy Gate: Manual Release Intercepted & Denied
+                </p>
+                <span className="font-mono text-[10px] font-bold uppercase tracking-wider bg-rose-200 text-rose-900 px-2 py-0.5 rounded border border-rose-300">
+                  Policy Status: {probeResult.policy_verdict}
+                </span>
+              </div>
+              <p className="text-rose-800 mt-1 leading-normal">
+                {probeResult.message}
+              </p>
+              <div className="mt-2 text-[11px] text-slate-700 font-mono bg-white p-2.5 rounded-lg border border-rose-200 leading-snug">
+                <span className="font-bold text-slate-900">Enforcement Reasoning: </span>
+                {probeResult.reason}
+              </div>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setProbeResult(null)}
+            className="text-rose-400 hover:text-rose-800 p-1 rounded-md"
+            title="Dismiss security alert"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
       )}
     </div>
